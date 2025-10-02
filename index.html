@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pronóstico de Viento - Parques Eólicos</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        header {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        h1 {
+            color: #667eea;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+        
+        .update-time {
+            color: #666;
+            font-size: 0.9em;
+            margin-top: 10px;
+        }
+        
+        .parks-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+        
+        .park-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .park-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+        }
+        
+        .park-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid #667eea;
+        }
+        
+        .park-icon {
+            font-size: 2em;
+        }
+        
+        .park-name {
+            font-size: 1.5em;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .data-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .data-row:last-child {
+            border-bottom: none;
+        }
+        
+        .data-label {
+            color: #666;
+            font-weight: 500;
+        }
+        
+        .data-value {
+            color: #333;
+            font-weight: 600;
+        }
+        
+        .no-data {
+            color: #999;
+            font-style: italic;
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .forecast-section {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+        
+        .forecast-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 3px solid #764ba2;
+        }
+        
+        .forecast-title {
+            font-size: 2em;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .forecast-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+        }
+        
+        .forecast-day {
+            text-align: center;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 12px;
+            color: white;
+            transition: transform 0.3s ease;
+        }
+        
+        .forecast-day:hover {
+            transform: scale(1.05);
+        }
+        
+        .forecast-date {
+            font-size: 0.9em;
+            margin-bottom: 10px;
+            opacity: 0.9;
+        }
+        
+        .forecast-value {
+            font-size: 2em;
+            font-weight: 700;
+            margin: 10px 0;
+        }
+        
+        .forecast-unit {
+            font-size: 0.8em;
+            opacity: 0.8;
+        }
+        
+        .historical-note {
+            background: #fff3cd;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            border-left: 4px solid #ffc107;
+        }
+        
+        .historical-note strong {
+            color: #856404;
+        }
+        
+        @media (max-width: 768px) {
+            .parks-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            h1 {
+                font-size: 1.8em;
+            }
+            
+            .forecast-grid {
+                grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>
+                <span>🌬️</span>
+                Pronóstico de Viento - Parques Eólicos
+            </h1>
+            <div class="update-time">
+                Última actualización: 2025-10-02 07:54:44
+            </div>
+        </header>
+        
+        <div class="historical-note">
+            <strong>📊 Datos Históricos:</strong> Comparativa con el mismo día y hora hace un año
+        </div>
+        
+        <br>
+        
+        <div class="parks-grid">
+
+            <div class="park-card">
+                <div class="park-header">
+                    <span class="park-icon">⚡</span>
+                    <span class="park-name">Badia</span>
+                </div>
+
+                <div class="data-row">
+                    <span class="data-label">Fecha de referencia:</span>
+                    <span class="data-value">2024-10-02 07:00</span>
+                </div>
+
+                <div class="data-row">
+                    <span class="data-label">ratedMW:</span>
+                    <span class="data-value">50,1</span>
+                </div>
+
+                <div class="data-row">
+                    <span class="data-label">wind_mps:</span>
+                    <span class="data-value">8,74</span>
+                </div>
+
+                <div class="data-row">
+                    <span class="data-label">availability:</span>
+                    <span class="data-value">1</span>
+                </div>
+
+                <div class="data-row">
+                    <span class="data-label">Horas:</span>
+                    <span class="data-value">6584</span>
+                </div>
+
+                <div class="data-row">
+                    <span class="data-label">Horas acumuladas:</span>
+                    <span class="data-value">6451</span>
+                </div>
+
+                <div class="data-row">
+                    <span class="data-label">power_MW:</span>
+                    <span class="data-value">31,95</span>
+                </div>
+
+                <div class="data-row">
+                    <span class="data-label">energy_MWh:</span>
+                    <span class="data-value">31,95</span>
+                </div>
+
+                <div class="data-row">
+                    <span class="data-label">energy_posibol_accum_MWh:</span>
+                    <span class="data-value">199080,48</span>
+                </div>
+
+                <div class="data-row">
+                    <span class="data-label">energy_real_accum_MWh:</span>
+                    <span class="data-value">195008,13</span>
+                </div>
+
+                <div class="data-row">
+                    <span class="data-label">availability_accum_pct:</span>
+                    <span class="data-value">97,98</span>
+                </div>
+
+                <div class="data-row">
+                    <span class="data-label">energy_availability_pct:</span>
+                    <span class="data-value">97,95</span>
+                </div>
+
+                <div class="data-row">
+                    <span class="data-label">Unnamed: 12:</span>
+                    <span class="data-value">nan</span>
+                </div>
+
+                <div class="data-row">
+                    <span class="data-label">Unnamed: 13:</span>
+                    <span class="data-value">nan</span>
+                </div>
+
+            </div>
+
+            <div class="park-card">
+                <div class="park-header">
+                    <span class="park-icon">⚡</span>
+                    <span class="park-name">Elgea</span>
+                </div>
+
+                <div class="data-row">
+                    <span class="data-label">Fecha de referencia:</span>
+                    <span class="data-value">2024-10-02 07:00</span>
+                </div>
+
+                <div class="data-row">
+                    <span class="data-label">ratedMW:</span>
+                    <span class="data-value">32,3</span>
+                </div>
+
+                <div class="data-row">
+                    <span class="data-label">wind_mps:</span>
+                    <span class="data-value">7,65</span>
+                </div>
+
+                <div class="data-row">
+                    <span class="data-label">availability:</span>
+                    <span class="data-value">1</span>
+                </div>
+
+                <div class="data-row">
+                    <span class="data-label">Horas:</span>
+                    <span class="data-value">6584</span>
+                </div>
+
+                <div class="data-row">
+                    <span class="data-label">Horas acumuladas:</span>
+                    <span class="data-value">6462</span>
+                </div>
+
+                <div class="data-row">
+                    <span class="data-label">power_MW:</span>
+                    <span class="data-value">16,69</span>
+                </div>
+
+                <div class="data-row">
+                    <span class="data-label">energy_MWh:</span>
+                    <span class="data-value">16,69</span>
+                </div>
+
+                <div class="data-row">
+                    <span class="data-label">energy_posibol_accum_MWh:</span>
+                    <span class="data-value">111710,99</span>
+                </div>
+
+                <div class="data-row">
+                    <span class="data-label">energy_real_accum_MWh:</span>
+                    <span class="data-value">109657,50</span>
+                </div>
+
+                <div class="data-row">
+                    <span class="data-label">availability_accum_pct:</span>
+                    <span class="data-value">98,15</span>
+                </div>
+
+                <div class="data-row">
+                    <span class="data-label">energy_availability_pct:</span>
+                    <span class="data-value">98,16</span>
+                </div>
+
+            </div>
+
+            <div class="park-card">
+                <div class="park-header">
+                    <span class="park-icon">⚡</span>
+                    <span class="park-name">Corrella</span>
+                </div>
+
+                <div class="data-row">
+                    <span class="data-label">Fecha de referencia:</span>
+                    <span class="data-value">2024-10-02 07:00</span>
+                </div>
+
+                <div class="data-row">
+                    <span class="data-label">ratedMW:</span>
+                    <span class="data-value">139,2</span>
+                </div>
+
+                <div class="data-row">
+                    <span class="data-label">wind_mps:</span>
+                    <span class="data-value">8,44</span>
+                </div>
+
+                <div class="data-row">
+                    <span class="data-label">availability:</span>
+                    <span class="data-value">1</span>
+                </div>
+
+                <div class="data-row">
+                    <span class="data-label">Horas:</span>
+                    <span class="data-value">6584</span>
+                </div>
+
+                <div class="data-row">
+                    <span class="data-label">Horas acumuladas:</span>
+                    <span class="data-value">6430</span>
+                </div>
+
+                <div class="data-row">
+                    <span class="data-label">power_MW:</span>
+                    <span class="data-value">84,14</span>
+                </div>
+
+                <div class="data-row">
+                    <span class="data-label">energy_MWh:</span>
+                    <span class="data-value">84,14</span>
+                </div>
+
+                <div class="data-row">
+                    <span class="data-label">energy_posibol_accum_MWh:</span>
+                    <span class="data-value">527513,56</span>
+                </div>
+
+                <div class="data-row">
+                    <span class="data-label">energy_real_accum_MWh:</span>
+                    <span class="data-value">515324,28</span>
+                </div>
+
+                <div class="data-row">
+                    <span class="data-label">availability_accum_pct:</span>
+                    <span class="data-value">97,66</span>
+                </div>
+
+                <div class="data-row">
+                    <span class="data-label">energy_availability_pct:</span>
+                    <span class="data-value">97,69</span>
+                </div>
+
+            </div>
+
+        </div>
+        
+        <div class="forecast-section">
+            <div class="forecast-header">
+                <span style="font-size: 2em;">📈</span>
+                <span class="forecast-title">Pronóstico 5 Días</span>
+            </div>
+            <div class="forecast-grid">
+
+                <div class="no-data">
+                    No hay pronóstico disponible
+                </div>
+
+            </div>
+        </div>
+    </div>
+</body>
+</html>
