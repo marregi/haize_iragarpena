@@ -41,7 +41,7 @@ def generate_station_forecast(df, station_name):
         df = df.copy()
         df["timestamp"] = pd.to_datetime(df["timestamp"], errors="coerce")
         df["wind_mps"] = pd.to_numeric(df["wind_mps"].astype(str).str.replace(',', '.'), errors="coerce")
-        df = df.dropna()
+        df = df.dropna(subset=['timestamp', 'wind_mps'])
         
         if df.empty:
             return None
