@@ -1,6 +1,7 @@
 import pandas as pd
 from datetime import datetime, timedelta
 import json
+import random
 
 # --- ID de tu Google Sheet ---
 GSHEET_ID = "1rcxEcpwdHDFD5bRM8gu_5xU3ZDz8nEtj"
@@ -33,8 +34,75 @@ def get_data_one_year_ago(df, fecha_col="timestamp"):
     )
     return df[mask], one_year_ago
 
+# --- Generar pronóstico por estación ---
+def generate_station_forecast(df, station_name):
+    """Genera pronóstico específico para una estación"""
+    if {"timestamp", "wind_mps"}.issubset(df.columns):
+        df = df.copy()
+        df["timestamp"] = pd.to_datetime(df["timestamp"], errors="coerce")
+        df["wind_mps"] = pd.to_numeric(df["wind_mps"].astype(str).str.replace(',', '.'), errors="coerce")
+        df = df.dropna()
+        
+        if df.empty:
+            return None
+            
+        # Obtener últimos 30 días para calcular tendencias
+        df = df.sort_values("timestamp")
+        ult_fecha = df["timestamp"].max()
+        df_recent = df[df["timestamp"] > (ult_fecha - pd.Timedelta(days=30))]
+        
+        if df_recent.empty:
+            return None
+        
+        # Calcular promedios por hora del día para patrones diarios
+        df_recent = df_recent.copy()  # Evitar advertencias de pandas
+        df_recent['hour'] = df_recent['timestamp'].dt.hour
+        hourly_avg = df_recent.groupby('hour')['wind_mps'].mean()
+        
+        # Calcular promedio general
+        general_avg = df_recent['wind_mps'].mean()
+        
+        # Generar pronóstico para los próximos 3 días con detalle horario
+        forecast_data = []
+        start_date = ult_fecha + pd.Timedelta(days=1)
+        
+        for day_offset in range(3):
+            current_date = start_date + pd.Timedelta(days=day_offset)
+            day_forecasts = []
+            
+            # Generar pronóstico para horas específicas del día (cada 3 horas)
+            for hour in [6, 9, 12, 15, 18, 21]:
+                # Usar patrón horario si existe, sino usar promedio general
+                if hour in hourly_avg:
+                    base_value = hourly_avg[hour]
+                else:
+                    base_value = general_avg
+                
+                # Añadir pequeña variación aleatoria basada en variabilidad histórica
+                std_dev = df_recent['wind_mps'].std()
+                import random
+                variation = random.uniform(-0.2 * std_dev, 0.2 * std_dev)
+                forecast_value = max(0, base_value + variation)
+                
+                day_forecasts.append({
+                    'datetime': current_date.replace(hour=hour),
+                    'hour': f"{hour:02d}:00",
+                    'wind_mps': round(forecast_value, 1)
+                })
+            
+            forecast_data.append({
+                'date': current_date.strftime('%d/%m/%Y'),
+                'date_short': current_date.strftime('%d/%m'),
+                'weekday': current_date.strftime('%A'),
+                'hours': day_forecasts
+            })
+        
+        return forecast_data
+    
+    return None
+
 # --- Generar HTML ---
-def generate_html(parques_data, forecast_data, timestamp):
+def generate_html(parques_data, forecast_by_station, timestamp):
     html = f"""<!DOCTYPE html>
 <html lang="es">
 <head>
@@ -57,7 +125,7 @@ def generate_html(parques_data, forecast_data, timestamp):
         }}
         
         .container {{
-            max-width: 1400px;
+            max-width: 1600px;
             margin: 0 auto;
         }}
         
@@ -88,7 +156,7 @@ def generate_html(parques_data, forecast_data, timestamp):
         
         .parks-grid {{
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
             gap: 25px;
             margin-bottom: 30px;
         }}
@@ -158,6 +226,7 @@ def generate_html(parques_data, forecast_data, timestamp):
             border-radius: 15px;
             padding: 30px;
             box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            margin-bottom: 25px;
         }}
         
         .forecast-header {{
@@ -170,45 +239,85 @@ def generate_html(parques_data, forecast_data, timestamp):
         }}
         
         .forecast-title {{
-            font-size: 2em;
+            font-size: 1.8em;
             font-weight: 600;
             color: #333;
         }}
         
         .forecast-grid {{
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 20px;
         }}
         
         .forecast-day {{
-            text-align: center;
-            padding: 20px;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             border-radius: 12px;
+            padding: 20px;
             color: white;
             transition: transform 0.3s ease;
         }}
         
         .forecast-day:hover {{
-            transform: scale(1.05);
+            transform: scale(1.02);
         }}
         
         .forecast-date {{
-            font-size: 0.9em;
-            margin-bottom: 10px;
+            font-size: 1.1em;
+            font-weight: 600;
+            margin-bottom: 15px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255,255,255,0.3);
+            padding-bottom: 10px;
+        }}
+        
+        .forecast-hours {{
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }}
+        
+        .forecast-hour {{
+            background: rgba(255,255,255,0.2);
+            padding: 10px;
+            border-radius: 8px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+        }}
+        
+        .forecast-time {{
+            font-size: 0.8em;
+            margin-bottom: 5px;
             opacity: 0.9;
         }}
         
         .forecast-value {{
-            font-size: 2em;
+            font-size: 1.2em;
             font-weight: 700;
-            margin: 10px 0;
         }}
         
         .forecast-unit {{
-            font-size: 0.8em;
+            font-size: 0.7em;
             opacity: 0.8;
+        }}
+        
+        .station-forecast {{
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 2px solid #f0f0f0;
+        }}
+        
+        .station-forecast-header {{
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }}
+        
+        .station-forecast-title {{
+            font-size: 1.2em;
+            font-weight: 600;
+            color: #667eea;
         }}
         
         .historical-note {{
@@ -233,7 +342,11 @@ def generate_html(parques_data, forecast_data, timestamp):
             }}
             
             .forecast-grid {{
-                grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+                grid-template-columns: 1fr;
+            }}
+            
+            .forecast-hours {{
+                grid-template-columns: repeat(2, 1fr);
             }}
         }}
     </style>
@@ -292,42 +405,46 @@ def generate_html(parques_data, forecast_data, timestamp):
                 </div>
 """
         
-        html += """
-            </div>
+        # Agregar pronóstico específico de la estación
+        if park_name in forecast_by_station and forecast_by_station[park_name]:
+            html += """
+                <div class="station-forecast">
+                    <div class="station-forecast-header">
+                        <span>📈</span>
+                        <span class="station-forecast-title">Pronóstico 3 días</span>
+                    </div>
 """
-    
-    # Sección de pronóstico
-    html += """
-        </div>
+            
+            for day_data in forecast_by_station[park_name]:
+                html += f"""
+                    <div class="forecast-day" style="margin-bottom: 15px;">
+                        <div class="forecast-date">{day_data['date']} - {day_data['weekday']}</div>
+                        <div class="forecast-hours">
+"""
+                
+                for hour_data in day_data['hours']:
+                    html += f"""
+                            <div class="forecast-hour">
+                                <div class="forecast-time">{hour_data['hour']}</div>
+                                <div class="forecast-value">{hour_data['wind_mps']}</div>
+                                <div class="forecast-unit">m/s</div>
+                            </div>
+"""
+                
+                html += """
+                        </div>
+                    </div>
+"""
+            
+            html += """
+                </div>
+"""
         
-        <div class="forecast-section">
-            <div class="forecast-header">
-                <span style="font-size: 2em;">📈</span>
-                <span class="forecast-title">Pronóstico 5 Días</span>
-            </div>
-            <div class="forecast-grid">
-"""
-    
-    if forecast_data is not None and not forecast_data.empty:
-        for _, row in forecast_data.iterrows():
-            fecha_str = row['fecha'].strftime('%d/%m/%Y')
-            wind_value = row['wind_mps_pronostico']
-            html += f"""
-                <div class="forecast-day">
-                    <div class="forecast-date">{fecha_str}</div>
-                    <div class="forecast-value">{wind_value}</div>
-                    <div class="forecast-unit">m/s</div>
-                </div>
-"""
-    else:
         html += """
-                <div class="no-data">
-                    No hay pronóstico disponible
-                </div>
+            </div>
 """
     
     html += """
-            </div>
         </div>
     </div>
 </body>
@@ -364,27 +481,14 @@ def main():
                 'data': {}
             }
     
-    # Generar pronóstico
-    df_total = []
+    # Generar pronósticos por estación
+    forecast_by_station = {}
     for nombre, df in parques.items():
-        if {"fechas", "wind_mps"}.issubset(df.columns):
-            df["fechas"] = pd.to_datetime(df["fechas"], errors="coerce")
-            df_total.append(df[["fechas", "wind_mps"]])
-    
-    df_forecast = None
-    if df_total:
-        df_total = pd.concat(df_total).dropna().sort_values("fechas")
-        ult_fecha = df_total["fechas"].max()
-        fechas_futuras = pd.date_range(ult_fecha + pd.Timedelta(days=1), periods=5, freq="D")
-        promedio = df_total[df_total["fechas"] > (ult_fecha - pd.Timedelta(days=30))]["wind_mps"].mean()
-        pronostico = [round(promedio, 2)] * 5
-        df_forecast = pd.DataFrame({
-            "fecha": fechas_futuras,
-            "wind_mps_pronostico": pronostico
-        })
+        forecast = generate_station_forecast(df, nombre)
+        forecast_by_station[nombre] = forecast
     
     # Generar HTML
-    html_content = generate_html(parques_data, df_forecast, timestamp)
+    html_content = generate_html(parques_data, forecast_by_station, timestamp)
     
     # Guardar archivo
     with open('index.html', 'w', encoding='utf-8') as f:
@@ -392,6 +496,7 @@ def main():
     
     print(f"✅ HTML generado exitosamente: index.html")
     print(f"📅 Timestamp: {timestamp}")
+    print(f"📊 Pronósticos generados para {len(forecast_by_station)} estaciones")
 
 if __name__ == "__main__":
     main()
