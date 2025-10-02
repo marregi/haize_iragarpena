@@ -20,7 +20,7 @@
         }
         
         .container {
-            max-width: 1400px;
+            max-width: 1600px;
             margin: 0 auto;
         }
         
@@ -51,7 +51,7 @@
         
         .parks-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
             gap: 25px;
             margin-bottom: 30px;
         }
@@ -121,6 +121,7 @@
             border-radius: 15px;
             padding: 30px;
             box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            margin-bottom: 25px;
         }
         
         .forecast-header {
@@ -133,45 +134,85 @@
         }
         
         .forecast-title {
-            font-size: 2em;
+            font-size: 1.8em;
             font-weight: 600;
             color: #333;
         }
         
         .forecast-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 20px;
         }
         
         .forecast-day {
-            text-align: center;
-            padding: 20px;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             border-radius: 12px;
+            padding: 20px;
             color: white;
             transition: transform 0.3s ease;
         }
         
         .forecast-day:hover {
-            transform: scale(1.05);
+            transform: scale(1.02);
         }
         
         .forecast-date {
-            font-size: 0.9em;
-            margin-bottom: 10px;
+            font-size: 1.1em;
+            font-weight: 600;
+            margin-bottom: 15px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255,255,255,0.3);
+            padding-bottom: 10px;
+        }
+        
+        .forecast-hours {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+        
+        .forecast-hour {
+            background: rgba(255,255,255,0.2);
+            padding: 10px;
+            border-radius: 8px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+        }
+        
+        .forecast-time {
+            font-size: 0.8em;
+            margin-bottom: 5px;
             opacity: 0.9;
         }
         
         .forecast-value {
-            font-size: 2em;
+            font-size: 1.2em;
             font-weight: 700;
-            margin: 10px 0;
         }
         
         .forecast-unit {
-            font-size: 0.8em;
+            font-size: 0.7em;
             opacity: 0.8;
+        }
+        
+        .station-forecast {
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 2px solid #f0f0f0;
+        }
+        
+        .station-forecast-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .station-forecast-title {
+            font-size: 1.2em;
+            font-weight: 600;
+            color: #667eea;
         }
         
         .historical-note {
@@ -196,7 +237,11 @@
             }
             
             .forecast-grid {
-                grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+                grid-template-columns: 1fr;
+            }
+            
+            .forecast-hours {
+                grid-template-columns: repeat(2, 1fr);
             }
         }
     </style>
@@ -209,7 +254,7 @@
                 Pronóstico de Viento - Parques Eólicos
             </h1>
             <div class="update-time">
-                Última actualización: 2025-10-02 07:57:27
+                Última actualización: 2025-10-02 08:04:49
             </div>
         </header>
         
@@ -229,7 +274,7 @@
 
                 <div class="data-row">
                     <span class="data-label">Fecha de referencia:</span>
-                    <span class="data-value">2024-10-02 07:00</span>
+                    <span class="data-value">2024-10-02 08:00</span>
                 </div>
 
                 <div class="data-row">
@@ -239,7 +284,7 @@
 
                 <div class="data-row">
                     <span class="data-label">wind_mps:</span>
-                    <span class="data-value">8,74</span>
+                    <span class="data-value">8,89</span>
                 </div>
 
                 <div class="data-row">
@@ -249,32 +294,32 @@
 
                 <div class="data-row">
                     <span class="data-label">Horas:</span>
-                    <span class="data-value">6584</span>
+                    <span class="data-value">6585</span>
                 </div>
 
                 <div class="data-row">
                     <span class="data-label">Horas acumuladas:</span>
-                    <span class="data-value">6451</span>
+                    <span class="data-value">6452</span>
                 </div>
 
                 <div class="data-row">
                     <span class="data-label">power_MW:</span>
-                    <span class="data-value">31,95</span>
+                    <span class="data-value">32,79</span>
                 </div>
 
                 <div class="data-row">
                     <span class="data-label">energy_MWh:</span>
-                    <span class="data-value">31,95</span>
+                    <span class="data-value">32,79</span>
                 </div>
 
                 <div class="data-row">
                     <span class="data-label">energy_posibol_accum_MWh:</span>
-                    <span class="data-value">199080,48</span>
+                    <span class="data-value">199113,27</span>
                 </div>
 
                 <div class="data-row">
                     <span class="data-label">energy_real_accum_MWh:</span>
-                    <span class="data-value">195008,13</span>
+                    <span class="data-value">195040,91</span>
                 </div>
 
                 <div class="data-row">
@@ -307,7 +352,7 @@
 
                 <div class="data-row">
                     <span class="data-label">Fecha de referencia:</span>
-                    <span class="data-value">2024-10-02 07:00</span>
+                    <span class="data-value">2024-10-02 08:00</span>
                 </div>
 
                 <div class="data-row">
@@ -317,7 +362,7 @@
 
                 <div class="data-row">
                     <span class="data-label">wind_mps:</span>
-                    <span class="data-value">7,65</span>
+                    <span class="data-value">5,12</span>
                 </div>
 
                 <div class="data-row">
@@ -327,32 +372,32 @@
 
                 <div class="data-row">
                     <span class="data-label">Horas:</span>
-                    <span class="data-value">6584</span>
+                    <span class="data-value">6585</span>
                 </div>
 
                 <div class="data-row">
                     <span class="data-label">Horas acumuladas:</span>
-                    <span class="data-value">6462</span>
+                    <span class="data-value">6463</span>
                 </div>
 
                 <div class="data-row">
                     <span class="data-label">power_MW:</span>
-                    <span class="data-value">16,69</span>
+                    <span class="data-value">7,61</span>
                 </div>
 
                 <div class="data-row">
                     <span class="data-label">energy_MWh:</span>
-                    <span class="data-value">16,69</span>
+                    <span class="data-value">7,61</span>
                 </div>
 
                 <div class="data-row">
                     <span class="data-label">energy_posibol_accum_MWh:</span>
-                    <span class="data-value">111710,99</span>
+                    <span class="data-value">111718,59</span>
                 </div>
 
                 <div class="data-row">
                     <span class="data-label">energy_real_accum_MWh:</span>
-                    <span class="data-value">109657,50</span>
+                    <span class="data-value">109665,10</span>
                 </div>
 
                 <div class="data-row">
@@ -365,6 +410,143 @@
                     <span class="data-value">98,16</span>
                 </div>
 
+                <div class="station-forecast">
+                    <div class="station-forecast-header">
+                        <span>📈</span>
+                        <span class="station-forecast-title">Pronóstico 3 días</span>
+                    </div>
+
+                    <div class="forecast-day" style="margin-bottom: 15px;">
+                        <div class="forecast-date">01/01/2025 - Wednesday</div>
+                        <div class="forecast-hours">
+
+                            <div class="forecast-hour">
+                                <div class="forecast-time">06:00</div>
+                                <div class="forecast-value">9.1</div>
+                                <div class="forecast-unit">m/s</div>
+                            </div>
+
+                            <div class="forecast-hour">
+                                <div class="forecast-time">09:00</div>
+                                <div class="forecast-value">8.5</div>
+                                <div class="forecast-unit">m/s</div>
+                            </div>
+
+                            <div class="forecast-hour">
+                                <div class="forecast-time">12:00</div>
+                                <div class="forecast-value">8.6</div>
+                                <div class="forecast-unit">m/s</div>
+                            </div>
+
+                            <div class="forecast-hour">
+                                <div class="forecast-time">15:00</div>
+                                <div class="forecast-value">10.0</div>
+                                <div class="forecast-unit">m/s</div>
+                            </div>
+
+                            <div class="forecast-hour">
+                                <div class="forecast-time">18:00</div>
+                                <div class="forecast-value">9.8</div>
+                                <div class="forecast-unit">m/s</div>
+                            </div>
+
+                            <div class="forecast-hour">
+                                <div class="forecast-time">21:00</div>
+                                <div class="forecast-value">10.4</div>
+                                <div class="forecast-unit">m/s</div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <div class="forecast-day" style="margin-bottom: 15px;">
+                        <div class="forecast-date">02/01/2025 - Thursday</div>
+                        <div class="forecast-hours">
+
+                            <div class="forecast-hour">
+                                <div class="forecast-time">06:00</div>
+                                <div class="forecast-value">8.5</div>
+                                <div class="forecast-unit">m/s</div>
+                            </div>
+
+                            <div class="forecast-hour">
+                                <div class="forecast-time">09:00</div>
+                                <div class="forecast-value">7.9</div>
+                                <div class="forecast-unit">m/s</div>
+                            </div>
+
+                            <div class="forecast-hour">
+                                <div class="forecast-time">12:00</div>
+                                <div class="forecast-value">8.6</div>
+                                <div class="forecast-unit">m/s</div>
+                            </div>
+
+                            <div class="forecast-hour">
+                                <div class="forecast-time">15:00</div>
+                                <div class="forecast-value">9.8</div>
+                                <div class="forecast-unit">m/s</div>
+                            </div>
+
+                            <div class="forecast-hour">
+                                <div class="forecast-time">18:00</div>
+                                <div class="forecast-value">9.9</div>
+                                <div class="forecast-unit">m/s</div>
+                            </div>
+
+                            <div class="forecast-hour">
+                                <div class="forecast-time">21:00</div>
+                                <div class="forecast-value">9.8</div>
+                                <div class="forecast-unit">m/s</div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <div class="forecast-day" style="margin-bottom: 15px;">
+                        <div class="forecast-date">03/01/2025 - Friday</div>
+                        <div class="forecast-hours">
+
+                            <div class="forecast-hour">
+                                <div class="forecast-time">06:00</div>
+                                <div class="forecast-value">9.1</div>
+                                <div class="forecast-unit">m/s</div>
+                            </div>
+
+                            <div class="forecast-hour">
+                                <div class="forecast-time">09:00</div>
+                                <div class="forecast-value">8.4</div>
+                                <div class="forecast-unit">m/s</div>
+                            </div>
+
+                            <div class="forecast-hour">
+                                <div class="forecast-time">12:00</div>
+                                <div class="forecast-value">9.1</div>
+                                <div class="forecast-unit">m/s</div>
+                            </div>
+
+                            <div class="forecast-hour">
+                                <div class="forecast-time">15:00</div>
+                                <div class="forecast-value">10.2</div>
+                                <div class="forecast-unit">m/s</div>
+                            </div>
+
+                            <div class="forecast-hour">
+                                <div class="forecast-time">18:00</div>
+                                <div class="forecast-value">10.4</div>
+                                <div class="forecast-unit">m/s</div>
+                            </div>
+
+                            <div class="forecast-hour">
+                                <div class="forecast-time">21:00</div>
+                                <div class="forecast-value">9.8</div>
+                                <div class="forecast-unit">m/s</div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                </div>
+
             </div>
 
             <div class="park-card">
@@ -375,7 +557,7 @@
 
                 <div class="data-row">
                     <span class="data-label">Fecha de referencia:</span>
-                    <span class="data-value">2024-10-02 07:00</span>
+                    <span class="data-value">2024-10-02 08:00</span>
                 </div>
 
                 <div class="data-row">
@@ -385,7 +567,7 @@
 
                 <div class="data-row">
                     <span class="data-label">wind_mps:</span>
-                    <span class="data-value">8,44</span>
+                    <span class="data-value">7,6</span>
                 </div>
 
                 <div class="data-row">
@@ -395,32 +577,32 @@
 
                 <div class="data-row">
                     <span class="data-label">Horas:</span>
-                    <span class="data-value">6584</span>
+                    <span class="data-value">6585</span>
                 </div>
 
                 <div class="data-row">
                     <span class="data-label">Horas acumuladas:</span>
-                    <span class="data-value">6430</span>
+                    <span class="data-value">6431</span>
                 </div>
 
                 <div class="data-row">
                     <span class="data-label">power_MW:</span>
-                    <span class="data-value">84,14</span>
+                    <span class="data-value">71,15</span>
                 </div>
 
                 <div class="data-row">
                     <span class="data-label">energy_MWh:</span>
-                    <span class="data-value">84,14</span>
+                    <span class="data-value">71,15</span>
                 </div>
 
                 <div class="data-row">
                     <span class="data-label">energy_posibol_accum_MWh:</span>
-                    <span class="data-value">527513,56</span>
+                    <span class="data-value">527584,70</span>
                 </div>
 
                 <div class="data-row">
                     <span class="data-label">energy_real_accum_MWh:</span>
-                    <span class="data-value">515324,28</span>
+                    <span class="data-value">515395,42</span>
                 </div>
 
                 <div class="data-row">
@@ -433,22 +615,145 @@
                     <span class="data-value">97,69</span>
                 </div>
 
-            </div>
+                <div class="station-forecast">
+                    <div class="station-forecast-header">
+                        <span>📈</span>
+                        <span class="station-forecast-title">Pronóstico 3 días</span>
+                    </div>
 
-        </div>
-        
-        <div class="forecast-section">
-            <div class="forecast-header">
-                <span style="font-size: 2em;">📈</span>
-                <span class="forecast-title">Pronóstico 5 Días</span>
-            </div>
-            <div class="forecast-grid">
+                    <div class="forecast-day" style="margin-bottom: 15px;">
+                        <div class="forecast-date">01/01/2025 - Wednesday</div>
+                        <div class="forecast-hours">
 
-                <div class="no-data">
-                    No hay pronóstico disponible
+                            <div class="forecast-hour">
+                                <div class="forecast-time">06:00</div>
+                                <div class="forecast-value">9.2</div>
+                                <div class="forecast-unit">m/s</div>
+                            </div>
+
+                            <div class="forecast-hour">
+                                <div class="forecast-time">09:00</div>
+                                <div class="forecast-value">9.8</div>
+                                <div class="forecast-unit">m/s</div>
+                            </div>
+
+                            <div class="forecast-hour">
+                                <div class="forecast-time">12:00</div>
+                                <div class="forecast-value">9.1</div>
+                                <div class="forecast-unit">m/s</div>
+                            </div>
+
+                            <div class="forecast-hour">
+                                <div class="forecast-time">15:00</div>
+                                <div class="forecast-value">10.7</div>
+                                <div class="forecast-unit">m/s</div>
+                            </div>
+
+                            <div class="forecast-hour">
+                                <div class="forecast-time">18:00</div>
+                                <div class="forecast-value">10.0</div>
+                                <div class="forecast-unit">m/s</div>
+                            </div>
+
+                            <div class="forecast-hour">
+                                <div class="forecast-time">21:00</div>
+                                <div class="forecast-value">11.3</div>
+                                <div class="forecast-unit">m/s</div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <div class="forecast-day" style="margin-bottom: 15px;">
+                        <div class="forecast-date">02/01/2025 - Thursday</div>
+                        <div class="forecast-hours">
+
+                            <div class="forecast-hour">
+                                <div class="forecast-time">06:00</div>
+                                <div class="forecast-value">8.9</div>
+                                <div class="forecast-unit">m/s</div>
+                            </div>
+
+                            <div class="forecast-hour">
+                                <div class="forecast-time">09:00</div>
+                                <div class="forecast-value">8.8</div>
+                                <div class="forecast-unit">m/s</div>
+                            </div>
+
+                            <div class="forecast-hour">
+                                <div class="forecast-time">12:00</div>
+                                <div class="forecast-value">9.0</div>
+                                <div class="forecast-unit">m/s</div>
+                            </div>
+
+                            <div class="forecast-hour">
+                                <div class="forecast-time">15:00</div>
+                                <div class="forecast-value">10.6</div>
+                                <div class="forecast-unit">m/s</div>
+                            </div>
+
+                            <div class="forecast-hour">
+                                <div class="forecast-time">18:00</div>
+                                <div class="forecast-value">10.1</div>
+                                <div class="forecast-unit">m/s</div>
+                            </div>
+
+                            <div class="forecast-hour">
+                                <div class="forecast-time">21:00</div>
+                                <div class="forecast-value">10.8</div>
+                                <div class="forecast-unit">m/s</div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <div class="forecast-day" style="margin-bottom: 15px;">
+                        <div class="forecast-date">03/01/2025 - Friday</div>
+                        <div class="forecast-hours">
+
+                            <div class="forecast-hour">
+                                <div class="forecast-time">06:00</div>
+                                <div class="forecast-value">9.3</div>
+                                <div class="forecast-unit">m/s</div>
+                            </div>
+
+                            <div class="forecast-hour">
+                                <div class="forecast-time">09:00</div>
+                                <div class="forecast-value">9.2</div>
+                                <div class="forecast-unit">m/s</div>
+                            </div>
+
+                            <div class="forecast-hour">
+                                <div class="forecast-time">12:00</div>
+                                <div class="forecast-value">9.1</div>
+                                <div class="forecast-unit">m/s</div>
+                            </div>
+
+                            <div class="forecast-hour">
+                                <div class="forecast-time">15:00</div>
+                                <div class="forecast-value">10.5</div>
+                                <div class="forecast-unit">m/s</div>
+                            </div>
+
+                            <div class="forecast-hour">
+                                <div class="forecast-time">18:00</div>
+                                <div class="forecast-value">10.2</div>
+                                <div class="forecast-unit">m/s</div>
+                            </div>
+
+                            <div class="forecast-hour">
+                                <div class="forecast-time">21:00</div>
+                                <div class="forecast-value">10.8</div>
+                                <div class="forecast-unit">m/s</div>
+                            </div>
+
+                        </div>
+                    </div>
+
                 </div>
 
             </div>
+
         </div>
     </div>
 </body>
