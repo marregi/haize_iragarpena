@@ -1,6 +1,7 @@
 import pandas as pd
 from datetime import datetime, timedelta
 import json
+import pytz
 
 # --- ID de tu Google Sheet ---
 GSHEET_ID = "1rcxEcpwdHDFD5bRM8gu_5xU3ZDz8nEtj"
@@ -21,9 +22,12 @@ def load_all_sheets(gsheet_id: str) -> dict[str, pd.DataFrame]:
 
 # --- Obtener datos del momento actual ---
 def get_current_data(df, fecha_col="timestamp"):
-    now = datetime.now()
+    madrid_tz = pytz.timezone('Europe/Madrid')
+    now = datetime.now(madrid_tz)
     df = df.copy()
     df[fecha_col] = pd.to_datetime(df[fecha_col], errors="coerce")
+    # Localizar timestamps a timezone de Madrid
+    df[fecha_col] = df[fecha_col].dt.tz_localize('UTC').dt.tz_convert(madrid_tz)
     
     # Buscar el dato más cercano al momento actual
     df['time_diff'] = abs((df[fecha_col] - now).dt.total_seconds())
@@ -37,6 +41,20 @@ def get_current_data(df, fecha_col="timestamp"):
     
     return closest_data, actual_time
 
+# --- Traducir días de la semana al euskera ---
+def translate_weekday_to_basque(weekday_en):
+    """Traduce el nombre del día de la semana del inglés al euskera"""
+    translation = {
+        'Monday': 'Astelehena',
+        'Tuesday': 'Asteartea',
+        'Wednesday': 'Asteazkena',
+        'Thursday': 'Osteguna',
+        'Friday': 'Ostirala',
+        'Saturday': 'Larunbata',
+        'Sunday': 'Igandea'
+    }
+    return translation.get(weekday_en, weekday_en)
+
 # --- Obtener pronóstico real de los próximos 5 días del sheet ---
 def get_forecast_from_sheet(df, fecha_col="timestamp"):
     """Obtiene los datos de pronóstico de los próximos 5 días del sheet"""
@@ -49,7 +67,10 @@ def get_forecast_from_sheet(df, fecha_col="timestamp"):
         if df.empty:
             return None
             
-        now = datetime.now()
+        madrid_tz = pytz.timezone('Europe/Madrid')
+        now = datetime.now(madrid_tz)
+        # Localizar timestamps a timezone de Madrid
+        df["timestamp"] = df["timestamp"].dt.tz_localize('UTC').dt.tz_convert(madrid_tz)
         df = df.sort_values("timestamp")
         
         # Filtrar datos futuros (desde ahora hasta 5 días adelante)
@@ -79,10 +100,11 @@ def get_forecast_from_sheet(df, fecha_col="timestamp"):
                 })
             
             if day_forecasts:  # Solo agregar si hay datos
+                weekday_en = pd.Timestamp(date).strftime('%A')
                 forecast_data.append({
                     'date': pd.Timestamp(date).strftime('%d/%m/%Y'),
                     'date_short': pd.Timestamp(date).strftime('%d/%m'),
-                    'weekday': pd.Timestamp(date).strftime('%A'),
+                    'weekday': translate_weekday_to_basque(weekday_en),
                     'hours': day_forecasts
                 })
         
@@ -94,11 +116,11 @@ def get_forecast_from_sheet(df, fecha_col="timestamp"):
 def generate_html(parques_data, forecast_by_station, timestamp):
     # CSS y JavaScript básico
     head_content = '''<!DOCTYPE html>
-<html lang="es">
+<html lang="eu">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pronóstico de Viento - Parques Eólicos</title>
+    <title>Haize Iragarpena - Parke Eolikoak</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: Arial, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
@@ -164,12 +186,12 @@ def generate_html(parques_data, forecast_by_station, timestamp):
 <body>
     <div class="container">
         <header>
-            <h1>🌬️ Pronóstico de Viento - Parques Eólicos</h1>
-            <div>Última actualización: ''' + timestamp + '''</div>
+            <h1>🌬️ Haize Iragarpena - Parke Eolikoak</h1>
+            <div>Azken eguneratzea: ''' + timestamp + '''</div>
         </header>
         
         <div style="background: #fff3cd; padding: 15px; border-radius: 10px; margin-bottom: 20px; border-left: 4px solid #ffc107;">
-            <strong>📊 Datos Actuales:</strong> Información del momento más cercano disponible en la simulación
+            <strong>📊 Uneko Datuak:</strong> Simulazioan eskuragarri dagoen une hurbileneko informazioa
         </div>
         
         <div class="tabs-container">
@@ -187,17 +209,17 @@ def generate_html(parques_data, forecast_by_station, timestamp):
         
         # Datos actuales
         if park_info['has_data']:
-            head_content += f'<div class="current-data"><h3>📊 Datos Actuales - {park_info["fecha_ref"]}</h3><div class="data-grid">'
+            head_content += f'<div class="current-data"><h3>📊 Uneko Datuak - {park_info["fecha_ref"]}</h3><div class="data-grid">'
             for col, value in park_info['data'].items():
                 if col not in ['timestamp', 'fechas', 'time_diff']:
                     head_content += f'<div class="data-item"><div class="data-label">{col}</div><div class="data-value">{value}</div></div>'
             head_content += '</div></div>'
         else:
-            head_content += '<div class="no-data">No hay datos disponibles para esta fecha</div>'
+            head_content += '<div class="no-data">Ez dago daturik eskuragarri data honetarako</div>'
         
         # Pronóstico
         if park_name in forecast_by_station and forecast_by_station[park_name]:
-            head_content += '<div style="margin-top: 20px;"><h3>📈 Pronóstico 5 días (24 horas)</h3><div class="forecast-days">'
+            head_content += '<div style="margin-top: 20px;"><h3>📈 5 eguneko iragarpena (24 ordu)</h3><div class="forecast-days">'
             for day_data in forecast_by_station[park_name]:
                 head_content += f'<div class="forecast-day"><div class="forecast-day-header">{day_data["date"]} - {day_data["weekday"]}</div><div class="forecast-hours">'
                 for hour_data in day_data['hours']:
@@ -205,7 +227,7 @@ def generate_html(parques_data, forecast_by_station, timestamp):
                 head_content += '</div></div>'
             head_content += '</div></div>'
         else:
-            head_content += '<div class="no-data">No hay pronóstico disponible para esta estación</div>'
+            head_content += '<div class="no-data">Ez dago iragarpen eskuragarririk estazio honetarako</div>'
         
         head_content += '</div>'
     
@@ -216,7 +238,8 @@ def generate_html(parques_data, forecast_by_station, timestamp):
 # --- Main execution ---
 def main():
     # Timestamp de ejecución
-    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    madrid_tz = pytz.timezone('Europe/Madrid')
+    timestamp = datetime.now(madrid_tz).strftime("%Y-%m-%d %H:%M:%S")
     
     # Cargar datos
     parques = load_all_sheets(GSHEET_ID)
@@ -254,9 +277,9 @@ def main():
     with open('index.html', 'w', encoding='utf-8') as f:
         f.write(html_content)
     
-    print(f"✅ HTML generado exitosamente: index.html")
-    print(f"📅 Timestamp: {timestamp}")
-    print(f"📊 Pronósticos reales obtenidos del sheet para {len(forecast_by_station)} estaciones")
+    print(f"✅ HTMLa arrakastaz sortu da: index.html")
+    print(f"📅 Data-ordua: {timestamp}")
+    print(f"📊 Benetako iragarpena lortu da sheet-etik {len(forecast_by_station)} estazioetarako")
 
 if __name__ == "__main__":
     main()
