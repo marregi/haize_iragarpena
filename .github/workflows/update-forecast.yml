@@ -36,7 +36,7 @@ jobs:
       
       - name: Run forecast script
         run: |
-          python generate_forecast.py
+          python haizea.py
       
       - name: Check if there are changes
         id: verify_diff

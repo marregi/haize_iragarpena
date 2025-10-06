@@ -5,246 +5,66 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pronóstico de Viento - Parques Eólicos</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 20px;
-            color: #333;
-        }
-        
-        .container {
-            max-width: 1600px;
-            margin: 0 auto;
-        }
-        
-        header {
-            background: white;
-            padding: 30px;
-            border-radius: 20px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
-            margin-bottom: 30px;
-            text-align: center;
-        }
-        
-        h1 {
-            color: #667eea;
-            font-size: 2.5em;
-            margin-bottom: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 15px;
-        }
-        
-        .update-time {
-            color: #666;
-            font-size: 0.9em;
-            margin-top: 10px;
-        }
-        
-        .parks-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
-            gap: 25px;
-            margin-bottom: 30px;
-        }
-        
-        .park-card {
-            background: white;
-            border-radius: 15px;
-            padding: 25px;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-        
-        .park-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
-        }
-        
-        .park-header {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 20px;
-            padding-bottom: 15px;
-            border-bottom: 3px solid #667eea;
-        }
-        
-        .park-icon {
-            font-size: 2em;
-        }
-        
-        .park-name {
-            font-size: 1.5em;
-            font-weight: 600;
-            color: #333;
-        }
-        
-        .data-row {
-            display: flex;
-            justify-content: space-between;
-            padding: 12px 0;
-            border-bottom: 1px solid #f0f0f0;
-        }
-        
-        .data-row:last-child {
-            border-bottom: none;
-        }
-        
-        .data-label {
-            color: #666;
-            font-weight: 500;
-        }
-        
-        .data-value {
-            color: #333;
-            font-weight: 600;
-        }
-        
-        .no-data {
-            color: #999;
-            font-style: italic;
-            text-align: center;
-            padding: 20px;
-        }
-        
-        .forecast-section {
-            background: white;
-            border-radius: 15px;
-            padding: 30px;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
-            margin-bottom: 25px;
-        }
-        
-        .forecast-header {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            margin-bottom: 25px;
-            padding-bottom: 20px;
-            border-bottom: 3px solid #764ba2;
-        }
-        
-        .forecast-title {
-            font-size: 1.8em;
-            font-weight: 600;
-            color: #333;
-        }
-        
-        .forecast-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
-        }
-        
-        .forecast-day {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-radius: 12px;
-            padding: 20px;
-            color: white;
-            transition: transform 0.3s ease;
-        }
-        
-        .forecast-day:hover {
-            transform: scale(1.02);
-        }
-        
-        .forecast-date {
-            font-size: 1.1em;
-            font-weight: 600;
-            margin-bottom: 15px;
-            text-align: center;
-            border-bottom: 1px solid rgba(255,255,255,0.3);
-            padding-bottom: 10px;
-        }
-        
-        .forecast-hours {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
-        }
-        
-        .forecast-hour {
-            background: rgba(255,255,255,0.2);
-            padding: 10px;
-            border-radius: 8px;
-            text-align: center;
-            backdrop-filter: blur(10px);
-        }
-        
-        .forecast-time {
-            font-size: 0.8em;
-            margin-bottom: 5px;
-            opacity: 0.9;
-        }
-        
-        .forecast-value {
-            font-size: 1.2em;
-            font-weight: 700;
-        }
-        
-        .forecast-unit {
-            font-size: 0.7em;
-            opacity: 0.8;
-        }
-        
-        .station-forecast {
-            margin-top: 25px;
-            padding-top: 20px;
-            border-top: 2px solid #f0f0f0;
-        }
-        
-        .station-forecast-header {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 15px;
-        }
-        
-        .station-forecast-title {
-            font-size: 1.2em;
-            font-weight: 600;
-            color: #667eea;
-        }
-        
-        .historical-note {
-            background: #fff3cd;
-            padding: 15px;
-            border-radius: 10px;
-            margin-top: 20px;
-            border-left: 4px solid #ffc107;
-        }
-        
-        .historical-note strong {
-            color: #856404;
-        }
-        
-        @media (max-width: 768px) {
-            .parks-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            h1 {
-                font-size: 1.8em;
-            }
-            
-            .forecast-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .forecast-hours {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Arial, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+               min-height: 100vh; padding: 20px; color: #333; }
+        .container { max-width: 1800px; margin: 0 auto; }
+        header { background: white; padding: 30px; border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.1); 
+                margin-bottom: 30px; text-align: center; }
+        h1 { color: #667eea; font-size: 2.5em; margin-bottom: 10px; }
+        .tabs-container { background: white; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); overflow: hidden; }
+        .tabs-header { display: flex; background: #f8f9fa; border-bottom: 2px solid #dee2e6; }
+        .tab-button { flex: 1; padding: 20px; background: none; border: none; cursor: pointer; 
+                     font-size: 1.2em; font-weight: 600; color: #666; transition: all 0.3s ease; }
+        .tab-button:hover { background: rgba(102, 126, 234, 0.1); color: #667eea; }
+        .tab-button.active { background: #667eea; color: white; }
+        .tab-content { display: none; padding: 30px; }
+        .tab-content.active { display: block; }
+        .current-data { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; 
+                       padding: 20px; border-radius: 12px; margin-bottom: 30px; }
+        .data-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; }
+        .data-item { background: rgba(255,255,255,0.2); padding: 10px; border-radius: 8px; }
+        .data-label { font-size: 0.8em; opacity: 0.9; margin-bottom: 5px; }
+        .data-value { font-size: 1.1em; font-weight: 700; }
+        .forecast-days { display: grid; gap: 20px; }
+        .forecast-day { background: #f8f9fa; border-radius: 12px; padding: 20px; border: 1px solid #dee2e6; }
+        .forecast-day-header { font-size: 1.2em; font-weight: 600; color: #333; margin-bottom: 15px; 
+                              text-align: center; padding-bottom: 10px; border-bottom: 2px solid #667eea; }
+        .forecast-hours { display: grid; grid-template-columns: repeat(auto-fill, minmax(60px, 1fr)); gap: 8px; }
+        .forecast-hour { background: white; padding: 8px 4px; border-radius: 6px; text-align: center; 
+                        border: 1px solid #e0e0e0; }
+        .forecast-time { font-size: 0.7em; color: #666; margin-bottom: 3px; }
+        .forecast-value { font-size: 0.9em; font-weight: 700; color: #667eea; }
+        .forecast-unit { font-size: 0.6em; color: #999; }
+        .no-data { color: #999; font-style: italic; text-align: center; padding: 40px; }
     </style>
+    <script>
+        function showTab(stationName) {
+            // Ocultar todos los contenidos
+            var contents = document.querySelectorAll('.tab-content');
+            for(var i = 0; i < contents.length; i++) {
+                contents[i].classList.remove('active');
+            }
+            
+            // Desactivar todos los botones
+            var buttons = document.querySelectorAll('.tab-button');
+            for(var i = 0; i < buttons.length; i++) {
+                buttons[i].classList.remove('active');
+            }
+            
+            // Mostrar el contenido seleccionado
+            document.getElementById(stationName).classList.add('active');
+            
+            // Activar el botón correspondiente
+            var targetBtn = document.querySelector('[onclick="showTab(\''+stationName+'\')"]');
+            if(targetBtn) targetBtn.classList.add('active');
+        }
+        
+        // Mostrar la primera pestaña por defecto
+        window.onload = function() {
+            showTab('Badia');
+        }
+    </script>
 </head>
 <body>
     <div class="container">
@@ -254,12 +74,12 @@
                 Pronóstico de Viento - Parques Eólicos
             </h1>
             <div class="update-time">
-                Última actualización: 2025-10-06 05:12:34
+                Última actualización: 2025-10-02 08:16:26
             </div>
         </header>
         
-        <div class="historical-note">
-            <strong>📊 Datos Históricos:</strong> Comparativa con el mismo día y hora hace un año
+        <div style="background: #fff3cd; padding: 15px; border-radius: 10px; margin-bottom: 20px; border-left: 4px solid #ffc107;">
+            <strong>📊 Datos Actuales:</strong> Información del momento
         </div>
         
         <br>
@@ -272,145 +92,74 @@
                     <span class="park-name">Badia</span>
                 </div>
 
-                <div class="no-data">
-                    No hay datos disponibles para esta fecha
+                <div class="data-row">
+                    <span class="data-label">Fecha de referencia:</span>
+                    <span class="data-value">2024-10-02 08:00</span>
                 </div>
 
-                <div class="station-forecast">
-                    <div class="station-forecast-header">
-                        <span>📈</span>
-                        <span class="station-forecast-title">Pronóstico 3 días</span>
-                    </div>
+                <div class="data-row">
+                    <span class="data-label">ratedMW:</span>
+                    <span class="data-value">50,1</span>
+                </div>
 
-                    <div class="forecast-day" style="margin-bottom: 15px;">
-                        <div class="forecast-date">01/01/2026 - Thursday</div>
-                        <div class="forecast-hours">
+                <div class="data-row">
+                    <span class="data-label">wind_mps:</span>
+                    <span class="data-value">8,89</span>
+                </div>
 
-                            <div class="forecast-hour">
-                                <div class="forecast-time">06:00</div>
-                                <div class="forecast-value">9.7</div>
-                                <div class="forecast-unit">m/s</div>
-                            </div>
+                <div class="data-row">
+                    <span class="data-label">availability:</span>
+                    <span class="data-value">1</span>
+                </div>
 
-                            <div class="forecast-hour">
-                                <div class="forecast-time">09:00</div>
-                                <div class="forecast-value">7.3</div>
-                                <div class="forecast-unit">m/s</div>
-                            </div>
+                <div class="data-row">
+                    <span class="data-label">Horas:</span>
+                    <span class="data-value">6585</span>
+                </div>
 
-                            <div class="forecast-hour">
-                                <div class="forecast-time">12:00</div>
-                                <div class="forecast-value">9.3</div>
-                                <div class="forecast-unit">m/s</div>
-                            </div>
+                <div class="data-row">
+                    <span class="data-label">Horas acumuladas:</span>
+                    <span class="data-value">6452</span>
+                </div>
 
-                            <div class="forecast-hour">
-                                <div class="forecast-time">15:00</div>
-                                <div class="forecast-value">9.6</div>
-                                <div class="forecast-unit">m/s</div>
-                            </div>
+                <div class="data-row">
+                    <span class="data-label">power_MW:</span>
+                    <span class="data-value">32,79</span>
+                </div>
 
-                            <div class="forecast-hour">
-                                <div class="forecast-time">18:00</div>
-                                <div class="forecast-value">11.1</div>
-                                <div class="forecast-unit">m/s</div>
-                            </div>
+                <div class="data-row">
+                    <span class="data-label">energy_MWh:</span>
+                    <span class="data-value">32,79</span>
+                </div>
 
-                            <div class="forecast-hour">
-                                <div class="forecast-time">21:00</div>
-                                <div class="forecast-value">11.5</div>
-                                <div class="forecast-unit">m/s</div>
-                            </div>
+                <div class="data-row">
+                    <span class="data-label">energy_posibol_accum_MWh:</span>
+                    <span class="data-value">199113,27</span>
+                </div>
 
-                        </div>
-                    </div>
+                <div class="data-row">
+                    <span class="data-label">energy_real_accum_MWh:</span>
+                    <span class="data-value">195040,91</span>
+                </div>
 
-                    <div class="forecast-day" style="margin-bottom: 15px;">
-                        <div class="forecast-date">02/01/2026 - Friday</div>
-                        <div class="forecast-hours">
+                <div class="data-row">
+                    <span class="data-label">availability_accum_pct:</span>
+                    <span class="data-value">97,98</span>
+                </div>
 
-                            <div class="forecast-hour">
-                                <div class="forecast-time">06:00</div>
-                                <div class="forecast-value">10.0</div>
-                                <div class="forecast-unit">m/s</div>
-                            </div>
+                <div class="data-row">
+                    <span class="data-label">energy_availability_pct:</span>
+                    <span class="data-value">97,95</span>
+                </div>
 
-                            <div class="forecast-hour">
-                                <div class="forecast-time">09:00</div>
-                                <div class="forecast-value">7.5</div>
-                                <div class="forecast-unit">m/s</div>
-                            </div>
+                <div class="data-row">
+                    <span class="data-label">Unnamed: 12:</span>
+                    <span class="data-value">nan</span>
+                </div>
 
-                            <div class="forecast-hour">
-                                <div class="forecast-time">12:00</div>
-                                <div class="forecast-value">8.3</div>
-                                <div class="forecast-unit">m/s</div>
-                            </div>
-
-                            <div class="forecast-hour">
-                                <div class="forecast-time">15:00</div>
-                                <div class="forecast-value">10.6</div>
-                                <div class="forecast-unit">m/s</div>
-                            </div>
-
-                            <div class="forecast-hour">
-                                <div class="forecast-time">18:00</div>
-                                <div class="forecast-value">10.6</div>
-                                <div class="forecast-unit">m/s</div>
-                            </div>
-
-                            <div class="forecast-hour">
-                                <div class="forecast-time">21:00</div>
-                                <div class="forecast-value">10.6</div>
-                                <div class="forecast-unit">m/s</div>
-                            </div>
-
-                        </div>
-                    </div>
-
-                    <div class="forecast-day" style="margin-bottom: 15px;">
-                        <div class="forecast-date">03/01/2026 - Saturday</div>
-                        <div class="forecast-hours">
-
-                            <div class="forecast-hour">
-                                <div class="forecast-time">06:00</div>
-                                <div class="forecast-value">9.0</div>
-                                <div class="forecast-unit">m/s</div>
-                            </div>
-
-                            <div class="forecast-hour">
-                                <div class="forecast-time">09:00</div>
-                                <div class="forecast-value">7.2</div>
-                                <div class="forecast-unit">m/s</div>
-                            </div>
-
-                            <div class="forecast-hour">
-                                <div class="forecast-time">12:00</div>
-                                <div class="forecast-value">8.4</div>
-                                <div class="forecast-unit">m/s</div>
-                            </div>
-
-                            <div class="forecast-hour">
-                                <div class="forecast-time">15:00</div>
-                                <div class="forecast-value">10.7</div>
-                                <div class="forecast-unit">m/s</div>
-                            </div>
-
-                            <div class="forecast-hour">
-                                <div class="forecast-time">18:00</div>
-                                <div class="forecast-value">10.4</div>
-                                <div class="forecast-unit">m/s</div>
-                            </div>
-
-                            <div class="forecast-hour">
-                                <div class="forecast-time">21:00</div>
-                                <div class="forecast-value">10.7</div>
-                                <div class="forecast-unit">m/s</div>
-                            </div>
-
-                        </div>
-                    </div>
-
+                <div class="data-row">
+                    <span class="data-label">Unnamed: 13:</span>
+                    <span class="data-value">nan</span>
                 </div>
 
             </div>
@@ -421,8 +170,64 @@
                     <span class="park-name">Elgea</span>
                 </div>
 
-                <div class="no-data">
-                    No hay datos disponibles para esta fecha
+                <div class="data-row">
+                    <span class="data-label">Fecha de referencia:</span>
+                    <span class="data-value">2024-10-02 08:00</span>
+                </div>
+
+                <div class="data-row">
+                    <span class="data-label">ratedMW:</span>
+                    <span class="data-value">32,3</span>
+                </div>
+
+                <div class="data-row">
+                    <span class="data-label">wind_mps:</span>
+                    <span class="data-value">5,12</span>
+                </div>
+
+                <div class="data-row">
+                    <span class="data-label">availability:</span>
+                    <span class="data-value">1</span>
+                </div>
+
+                <div class="data-row">
+                    <span class="data-label">Horas:</span>
+                    <span class="data-value">6585</span>
+                </div>
+
+                <div class="data-row">
+                    <span class="data-label">Horas acumuladas:</span>
+                    <span class="data-value">6463</span>
+                </div>
+
+                <div class="data-row">
+                    <span class="data-label">power_MW:</span>
+                    <span class="data-value">7,61</span>
+                </div>
+
+                <div class="data-row">
+                    <span class="data-label">energy_MWh:</span>
+                    <span class="data-value">7,61</span>
+                </div>
+
+                <div class="data-row">
+                    <span class="data-label">energy_posibol_accum_MWh:</span>
+                    <span class="data-value">111718,59</span>
+                </div>
+
+                <div class="data-row">
+                    <span class="data-label">energy_real_accum_MWh:</span>
+                    <span class="data-value">109665,10</span>
+                </div>
+
+                <div class="data-row">
+                    <span class="data-label">availability_accum_pct:</span>
+                    <span class="data-value">98,15</span>
+                </div>
+
+                <div class="data-row">
+                    <span class="data-label">energy_availability_pct:</span>
+                    <span class="data-value">98,16</span>
                 </div>
 
                 <div class="station-forecast">
@@ -432,12 +237,12 @@
                     </div>
 
                     <div class="forecast-day" style="margin-bottom: 15px;">
-                        <div class="forecast-date">01/01/2026 - Thursday</div>
+                        <div class="forecast-date">01/01/2025 - Wednesday</div>
                         <div class="forecast-hours">
 
                             <div class="forecast-hour">
                                 <div class="forecast-time">06:00</div>
-                                <div class="forecast-value">8.9</div>
+                                <div class="forecast-value">8.8</div>
                                 <div class="forecast-unit">m/s</div>
                             </div>
 
@@ -461,13 +266,13 @@
 
                             <div class="forecast-hour">
                                 <div class="forecast-time">18:00</div>
-                                <div class="forecast-value">9.7</div>
+                                <div class="forecast-value">10.0</div>
                                 <div class="forecast-unit">m/s</div>
                             </div>
 
                             <div class="forecast-hour">
                                 <div class="forecast-time">21:00</div>
-                                <div class="forecast-value">10.5</div>
+                                <div class="forecast-value">9.9</div>
                                 <div class="forecast-unit">m/s</div>
                             </div>
 
@@ -475,28 +280,28 @@
                     </div>
 
                     <div class="forecast-day" style="margin-bottom: 15px;">
-                        <div class="forecast-date">02/01/2026 - Friday</div>
+                        <div class="forecast-date">02/01/2025 - Thursday</div>
                         <div class="forecast-hours">
 
                             <div class="forecast-hour">
                                 <div class="forecast-time">06:00</div>
+                                <div class="forecast-value">8.6</div>
+                                <div class="forecast-unit">m/s</div>
+                            </div>
+
+                            <div class="forecast-hour">
+                                <div class="forecast-time">09:00</div>
+                                <div class="forecast-value">8.2</div>
+                                <div class="forecast-unit">m/s</div>
+                            </div>
+
+                            <div class="forecast-hour">
+                                <div class="forecast-time">12:00</div>
                                 <div class="forecast-value">9.0</div>
                                 <div class="forecast-unit">m/s</div>
                             </div>
 
                             <div class="forecast-hour">
-                                <div class="forecast-time">09:00</div>
-                                <div class="forecast-value">8.4</div>
-                                <div class="forecast-unit">m/s</div>
-                            </div>
-
-                            <div class="forecast-hour">
-                                <div class="forecast-time">12:00</div>
-                                <div class="forecast-value">8.5</div>
-                                <div class="forecast-unit">m/s</div>
-                            </div>
-
-                            <div class="forecast-hour">
                                 <div class="forecast-time">15:00</div>
                                 <div class="forecast-value">9.6</div>
                                 <div class="forecast-unit">m/s</div>
@@ -504,13 +309,13 @@
 
                             <div class="forecast-hour">
                                 <div class="forecast-time">18:00</div>
-                                <div class="forecast-value">9.9</div>
+                                <div class="forecast-value">10.2</div>
                                 <div class="forecast-unit">m/s</div>
                             </div>
 
                             <div class="forecast-hour">
                                 <div class="forecast-time">21:00</div>
-                                <div class="forecast-value">9.9</div>
+                                <div class="forecast-value">10.1</div>
                                 <div class="forecast-unit">m/s</div>
                             </div>
 
@@ -518,30 +323,30 @@
                     </div>
 
                     <div class="forecast-day" style="margin-bottom: 15px;">
-                        <div class="forecast-date">03/01/2026 - Saturday</div>
+                        <div class="forecast-date">03/01/2025 - Friday</div>
                         <div class="forecast-hours">
 
                             <div class="forecast-hour">
                                 <div class="forecast-time">06:00</div>
-                                <div class="forecast-value">9.2</div>
+                                <div class="forecast-value">8.8</div>
                                 <div class="forecast-unit">m/s</div>
                             </div>
 
                             <div class="forecast-hour">
                                 <div class="forecast-time">09:00</div>
-                                <div class="forecast-value">8.4</div>
+                                <div class="forecast-value">8.1</div>
                                 <div class="forecast-unit">m/s</div>
                             </div>
 
                             <div class="forecast-hour">
                                 <div class="forecast-time">12:00</div>
-                                <div class="forecast-value">9.1</div>
+                                <div class="forecast-value">8.4</div>
                                 <div class="forecast-unit">m/s</div>
                             </div>
 
                             <div class="forecast-hour">
                                 <div class="forecast-time">15:00</div>
-                                <div class="forecast-value">9.9</div>
+                                <div class="forecast-value">10.1</div>
                                 <div class="forecast-unit">m/s</div>
                             </div>
 
@@ -553,7 +358,7 @@
 
                             <div class="forecast-hour">
                                 <div class="forecast-time">21:00</div>
-                                <div class="forecast-value">10.5</div>
+                                <div class="forecast-value">10.2</div>
                                 <div class="forecast-unit">m/s</div>
                             </div>
 
@@ -570,8 +375,64 @@
                     <span class="park-name">Corrella</span>
                 </div>
 
-                <div class="no-data">
-                    No hay datos disponibles para esta fecha
+                <div class="data-row">
+                    <span class="data-label">Fecha de referencia:</span>
+                    <span class="data-value">2024-10-02 08:00</span>
+                </div>
+
+                <div class="data-row">
+                    <span class="data-label">ratedMW:</span>
+                    <span class="data-value">139,2</span>
+                </div>
+
+                <div class="data-row">
+                    <span class="data-label">wind_mps:</span>
+                    <span class="data-value">7,6</span>
+                </div>
+
+                <div class="data-row">
+                    <span class="data-label">availability:</span>
+                    <span class="data-value">1</span>
+                </div>
+
+                <div class="data-row">
+                    <span class="data-label">Horas:</span>
+                    <span class="data-value">6585</span>
+                </div>
+
+                <div class="data-row">
+                    <span class="data-label">Horas acumuladas:</span>
+                    <span class="data-value">6431</span>
+                </div>
+
+                <div class="data-row">
+                    <span class="data-label">power_MW:</span>
+                    <span class="data-value">71,15</span>
+                </div>
+
+                <div class="data-row">
+                    <span class="data-label">energy_MWh:</span>
+                    <span class="data-value">71,15</span>
+                </div>
+
+                <div class="data-row">
+                    <span class="data-label">energy_posibol_accum_MWh:</span>
+                    <span class="data-value">527584,70</span>
+                </div>
+
+                <div class="data-row">
+                    <span class="data-label">energy_real_accum_MWh:</span>
+                    <span class="data-value">515395,42</span>
+                </div>
+
+                <div class="data-row">
+                    <span class="data-label">availability_accum_pct:</span>
+                    <span class="data-value">97,66</span>
+                </div>
+
+                <div class="data-row">
+                    <span class="data-label">energy_availability_pct:</span>
+                    <span class="data-value">97,69</span>
                 </div>
 
                 <div class="station-forecast">
@@ -581,12 +442,55 @@
                     </div>
 
                     <div class="forecast-day" style="margin-bottom: 15px;">
-                        <div class="forecast-date">01/01/2026 - Thursday</div>
+                        <div class="forecast-date">01/01/2025 - Wednesday</div>
                         <div class="forecast-hours">
 
                             <div class="forecast-hour">
                                 <div class="forecast-time">06:00</div>
-                                <div class="forecast-value">9.7</div>
+                                <div class="forecast-value">9.2</div>
+                                <div class="forecast-unit">m/s</div>
+                            </div>
+
+                            <div class="forecast-hour">
+                                <div class="forecast-time">09:00</div>
+                                <div class="forecast-value">9.8</div>
+                                <div class="forecast-unit">m/s</div>
+                            </div>
+
+                            <div class="forecast-hour">
+                                <div class="forecast-time">12:00</div>
+                                <div class="forecast-value">8.7</div>
+                                <div class="forecast-unit">m/s</div>
+                            </div>
+
+                            <div class="forecast-hour">
+                                <div class="forecast-time">15:00</div>
+                                <div class="forecast-value">10.9</div>
+                                <div class="forecast-unit">m/s</div>
+                            </div>
+
+                            <div class="forecast-hour">
+                                <div class="forecast-time">18:00</div>
+                                <div class="forecast-value">10.5</div>
+                                <div class="forecast-unit">m/s</div>
+                            </div>
+
+                            <div class="forecast-hour">
+                                <div class="forecast-time">21:00</div>
+                                <div class="forecast-value">11.3</div>
+                                <div class="forecast-unit">m/s</div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <div class="forecast-day" style="margin-bottom: 15px;">
+                        <div class="forecast-date">02/01/2025 - Thursday</div>
+                        <div class="forecast-hours">
+
+                            <div class="forecast-hour">
+                                <div class="forecast-time">06:00</div>
+                                <div class="forecast-value">8.7</div>
                                 <div class="forecast-unit">m/s</div>
                             </div>
 
@@ -598,7 +502,7 @@
 
                             <div class="forecast-hour">
                                 <div class="forecast-time">12:00</div>
-                                <div class="forecast-value">9.0</div>
+                                <div class="forecast-value">8.9</div>
                                 <div class="forecast-unit">m/s</div>
                             </div>
 
@@ -610,50 +514,7 @@
 
                             <div class="forecast-hour">
                                 <div class="forecast-time">18:00</div>
-                                <div class="forecast-value">9.8</div>
-                                <div class="forecast-unit">m/s</div>
-                            </div>
-
-                            <div class="forecast-hour">
-                                <div class="forecast-time">21:00</div>
-                                <div class="forecast-value">11.5</div>
-                                <div class="forecast-unit">m/s</div>
-                            </div>
-
-                        </div>
-                    </div>
-
-                    <div class="forecast-day" style="margin-bottom: 15px;">
-                        <div class="forecast-date">02/01/2026 - Friday</div>
-                        <div class="forecast-hours">
-
-                            <div class="forecast-hour">
-                                <div class="forecast-time">06:00</div>
-                                <div class="forecast-value">8.6</div>
-                                <div class="forecast-unit">m/s</div>
-                            </div>
-
-                            <div class="forecast-hour">
-                                <div class="forecast-time">09:00</div>
-                                <div class="forecast-value">9.0</div>
-                                <div class="forecast-unit">m/s</div>
-                            </div>
-
-                            <div class="forecast-hour">
-                                <div class="forecast-time">12:00</div>
-                                <div class="forecast-value">8.8</div>
-                                <div class="forecast-unit">m/s</div>
-                            </div>
-
-                            <div class="forecast-hour">
-                                <div class="forecast-time">15:00</div>
-                                <div class="forecast-value">10.4</div>
-                                <div class="forecast-unit">m/s</div>
-                            </div>
-
-                            <div class="forecast-hour">
-                                <div class="forecast-time">18:00</div>
-                                <div class="forecast-value">10.4</div>
+                                <div class="forecast-value">9.9</div>
                                 <div class="forecast-unit">m/s</div>
                             </div>
 
@@ -667,42 +528,42 @@
                     </div>
 
                     <div class="forecast-day" style="margin-bottom: 15px;">
-                        <div class="forecast-date">03/01/2026 - Saturday</div>
+                        <div class="forecast-date">03/01/2025 - Friday</div>
                         <div class="forecast-hours">
 
                             <div class="forecast-hour">
                                 <div class="forecast-time">06:00</div>
-                                <div class="forecast-value">8.9</div>
+                                <div class="forecast-value">9.3</div>
                                 <div class="forecast-unit">m/s</div>
                             </div>
 
                             <div class="forecast-hour">
                                 <div class="forecast-time">09:00</div>
-                                <div class="forecast-value">8.8</div>
+                                <div class="forecast-value">8.9</div>
                                 <div class="forecast-unit">m/s</div>
                             </div>
 
                             <div class="forecast-hour">
                                 <div class="forecast-time">12:00</div>
-                                <div class="forecast-value">9.2</div>
+                                <div class="forecast-value">9.3</div>
                                 <div class="forecast-unit">m/s</div>
                             </div>
 
                             <div class="forecast-hour">
                                 <div class="forecast-time">15:00</div>
-                                <div class="forecast-value">10.8</div>
+                                <div class="forecast-value">10.9</div>
                                 <div class="forecast-unit">m/s</div>
                             </div>
 
                             <div class="forecast-hour">
                                 <div class="forecast-time">18:00</div>
-                                <div class="forecast-value">10.1</div>
+                                <div class="forecast-value">9.8</div>
                                 <div class="forecast-unit">m/s</div>
                             </div>
 
                             <div class="forecast-hour">
                                 <div class="forecast-time">21:00</div>
-                                <div class="forecast-value">11.4</div>
+                                <div class="forecast-value">11.7</div>
                                 <div class="forecast-unit">m/s</div>
                             </div>
 
