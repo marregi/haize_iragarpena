@@ -4,7 +4,7 @@ import json
 import pytz
 
 # --- ID de tu Google Sheet ---
-GSHEET_ID = "1rcxEcpwdHDFD5bRM8gu_5xU3ZDz8nEtj"
+GSHEET_ID = "1uSRaVS35B3yuHKbjSZhJCBciQD_r3lp-"
 
 # --- Función para cargar todas las hojas públicas ---
 def load_all_sheets(gsheet_id: str) -> dict[str, pd.DataFrame]:
@@ -12,6 +12,7 @@ def load_all_sheets(gsheet_id: str) -> dict[str, pd.DataFrame]:
         "Badia": "129655069",
         "Elgea": "408081399", 
         "Corrella": "107505326"
+        "Oiz": "753827315"
     }
     dfs = {}
     for name, gid in sheet_tabs.items():

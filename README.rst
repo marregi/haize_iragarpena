@@ -159,6 +159,6 @@ Galderarik baduzu, sortu issue bat biltegi honetan.
 
 **Azken eguneratzea**: Automatikoki eguneratzen da orduro ⏰
 
-**Egilea**: [Zure izena hemen]
+**Egilea**: marregi
 
-**URL**: https://zure-erabiltzailea.github.io
+**URL**: https://marregi.github.io
