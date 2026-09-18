@@ -11,7 +11,7 @@ def load_all_sheets(gsheet_id: str) -> dict[str, pd.DataFrame]:
     sheet_tabs = {
         "Badia": "129655069",
         "Elgea": "408081399", 
-        "Corrella": "107505326"
+        "Corrella": "107505326",
         "Oiz": "753827315"
     }
     dfs = {}
