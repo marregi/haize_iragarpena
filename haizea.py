@@ -27,8 +27,8 @@ def get_current_data(df, fecha_col="timestamp"):
     now = datetime.now(madrid_tz)
     df = df.copy()
     df[fecha_col] = pd.to_datetime(df[fecha_col], errors="coerce")
-    # Localizar timestamps a timezone de Madrid
-    df[fecha_col] = df[fecha_col].dt.tz_localize('UTC').dt.tz_convert(madrid_tz)
+    # Localizar timestamps a timezone de Madrid (el sheet ya está en hora Madrid)
+    df[fecha_col] = df[fecha_col].dt.tz_localize(madrid_tz)
     
     # Buscar el dato más cercano al momento actual
     df['time_diff'] = abs((df[fecha_col] - now).dt.total_seconds())
@@ -70,8 +70,8 @@ def get_forecast_from_sheet(df, fecha_col="timestamp"):
             
         madrid_tz = pytz.timezone('Europe/Madrid')
         now = datetime.now(madrid_tz)
-        # Localizar timestamps a timezone de Madrid
-        df["timestamp"] = df["timestamp"].dt.tz_localize('UTC').dt.tz_convert(madrid_tz)
+        # Localizar timestamps a timezone de Madrid (el sheet ya está en hora Madrid)
+        df["timestamp"] = df["timestamp"].dt.tz_localize(madrid_tz)
         df = df.sort_values("timestamp")
         
         # Filtrar datos futuros (desde ahora hasta 5 días adelante)
