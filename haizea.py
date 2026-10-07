@@ -3,6 +3,14 @@ from datetime import datetime, timedelta
 import json
 import pytz
 
+
+def localize_madrid_timestamps(timestamps):
+    madrid_tz = pytz.timezone('Europe/Madrid')
+    return timestamps.dt.tz_localize(
+        madrid_tz, ambiguous=False, nonexistent='shift_forward'
+    )
+
+
 # --- ID de tu Google Sheet ---
 GSHEET_ID = "1uSRaVS35B3yuHKbjSZhJCBciQD_r3lp-"
 
@@ -28,7 +36,11 @@ def get_current_data(df, fecha_col="timestamp"):
     df = df.copy()
     df[fecha_col] = pd.to_datetime(df[fecha_col], errors="coerce")
     # Localizar timestamps a timezone de Madrid (el sheet ya está en hora Madrid)
-    df[fecha_col] = df[fecha_col].dt.tz_localize(madrid_tz)
+    df[fecha_col] = localize_madrid_timestamps(df[fecha_col])
+    df = df.dropna(subset=[fecha_col])
+
+    if df.empty:
+        return pd.DataFrame(), now
     
     # Buscar el dato más cercano al momento actual
     df['time_diff'] = abs((df[fecha_col] - now).dt.total_seconds())
@@ -71,7 +83,8 @@ def get_forecast_from_sheet(df, fecha_col="timestamp"):
         madrid_tz = pytz.timezone('Europe/Madrid')
         now = datetime.now(madrid_tz)
         # Localizar timestamps a timezone de Madrid (el sheet ya está en hora Madrid)
-        df["timestamp"] = df["timestamp"].dt.tz_localize(madrid_tz)
+        df["timestamp"] = localize_madrid_timestamps(df["timestamp"])
+        df = df.dropna(subset=["timestamp"])
         df = df.sort_values("timestamp")
         
         # Filtrar datos futuros (desde ahora hasta 5 días adelante)
