@@ -35,9 +35,11 @@ def get_current_data(df, fecha_col="timestamp"):
     now = datetime.now(madrid_tz)
     df = df.copy()
     df[fecha_col] = pd.to_datetime(df[fecha_col], errors="coerce")
-    # Localizar timestamps a timezone de Madrid (el sheet ya está en hora Madrid)
     df[fecha_col] = localize_madrid_timestamps(df[fecha_col])
-    df = df.dropna(subset=[fecha_col])
+    
+    print(f"Ahora: {now}")
+    print(f"Primer dato: {df[fecha_col].iloc[0]}")
+    print(f"Diferencia: {(now - df[fecha_col].iloc[0]).total_seconds() / 3600} horas")
 
     if df.empty:
         return pd.DataFrame(), now
