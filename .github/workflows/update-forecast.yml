@@ -1,14 +1,9 @@
 name: Actualizar Pronóstico de Viento
 
 on:
-  schedule:
-    # Ejecutar cada hora (minuto 0 de cada hora)
-    - cron: '0,30 * * * *'
-  
-  # Permitir ejecución manual desde GitHub
+  repository_dispatch:
+    types: [update-forecast]
   workflow_dispatch:
-  
-  # Ejecutar en cada push (opcional, para testing)
   push:
     branches:
       - main
